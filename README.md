@@ -54,6 +54,18 @@ module.exports = {
 
 By doing as above, you will get two files `library.min.js` and `library.js`. No need execute `webpack` twice, it just works!^^
 
+## Options ##
+`noMinSuffix`
+```javascript
+  ...
+        filename: 'library.js'
+  ...
+  new UnminifiedWebpackPlugin({
+    noMinSuffix : '-debug.js'
+  })
+```
+By doing as above, you will get two files `library.js` and `library-debug.js`.
+
 ## LICENSE ##
 
 [MIT License](https://raw.githubusercontent.com/leftstick/unminified-webpack-plugin/master/LICENSE)

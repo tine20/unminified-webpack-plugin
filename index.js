@@ -8,14 +8,14 @@ var resolve = path.resolve;
 var ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
 
 
-var getFileName = function(name) {
+var getFileName = function(name, options) {
     var minIndex = name.indexOf('min');
     if (minIndex > -1) {
         return name.substring(0, minIndex - 1) + name.substring(minIndex + 3);
     }
     var jsIndex = name.indexOf('js');
     if (jsIndex > -1) {
-        return name.substring(0, jsIndex - 1) + '.nomin.js';
+        return name.substring(0, jsIndex - 1) + options.noMinSuffix;
     }
     return name + 'nomin.js';
 };
@@ -27,6 +27,7 @@ var UnminifiedWebpackPlugin = function(opts) {
 UnminifiedWebpackPlugin.prototype.apply = function(compiler) {
     var options = this.options;
     options.test = options.test || /\.js($|\?)/i;
+    options.noMinSuffix = options.noMinSuffix || '.nomin.js';
 
     var containUgly = compiler.options.plugins.filter(function(plugin) {
         return plugin instanceof webpack.optimize.UglifyJsPlugin;
@@ -51,7 +52,7 @@ UnminifiedWebpackPlugin.prototype.apply = function(compiler) {
             files.forEach(function(file) {
                 try {
                     mkdirp.sync(resolve(compiler.options.output.path));
-                    var out = resolve(compiler.options.output.path, getFileName(file));
+                    var out = resolve(compiler.options.output.path, getFileName(file, options));
                     var asset = compilation.assets[file];
                     fs.writeFileSync(out, asset.source(), {
                         encoding: 'utf8'

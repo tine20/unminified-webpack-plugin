@@ -70,4 +70,31 @@ describe('testing', function() {
         });
     });
 
+    it('uses noMinSuffix if specified', function(done) {
+        var compiler = webpack({
+            entry: {
+                index: resolve(curDir, 'simple', 'index.js')
+            },
+            output: {
+                path: resolve(curDir, 'build'),
+                filename: 'bundle.js'
+            },
+            plugins: [
+                new webpack.optimize.UglifyJsPlugin({
+                    compress: {
+                        warnings: false
+                    }
+                }),
+                new UnminifiedWebpackPlugin({
+                  noMinSuffix : '-debug.js'
+                })
+            ]
+        });
+
+        compiler.run(function(err, stats) {
+            assert(fileExist(resolve(curDir, 'build', 'bundle-debug.js')));
+            done();
+        });
+    });
+
 });
