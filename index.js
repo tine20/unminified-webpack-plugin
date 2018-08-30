@@ -56,7 +56,12 @@ UnminifiedWebpackPlugin.prototype.apply = function(compiler) {
                 if (bannerPlugin) {
                     matchedBanners = [file].filter(ModuleFilenameHelpers.matchObject.bind(null, bannerPlugin.options));
                 }
-                const source = matchedBanners.length ? bannerPlugin.banner + asset.source() : asset.source();
+
+                let source = matchedBanners.length ? bannerPlugin.banner + asset.source() : asset.source();
+
+                // rewrite chunk names
+                source = source.replace(/(\/\*\*\*\*\*\*\/ 		script\.src = __webpack_require__\.p \+.*\.)(js|css)";/, '$1' + (options.postfix || 'nomin') + '.$2";');
+
                 compilation.assets[getFileName(file, path.extname(file).substr(1), options)] = {
                     source: function() {
                         return source;
